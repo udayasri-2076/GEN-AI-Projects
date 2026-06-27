@@ -4,9 +4,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from groq import Groq
+os.environ["GOOGLE_API_KEY"] = ""
+GROQ_API_KEY=""
 
-os.environ["GOOGLE_API_KEY"] = "AQ.Ab8RN6Kw3hy03nC6XDtKo2KLlF252USFIV6tkfnnPpINsMfRqg"
-GROQ_API_KEY = "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"
 
 client = Groq(api_key=GROQ_API_KEY)
 
