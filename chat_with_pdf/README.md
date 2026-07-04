@@ -13,6 +13,10 @@ An AI-powered application that lets you upload any PDF and ask questions about i
 - **Groq + LLaMA 3** — Fast AI responses
 - **Streamlit** — Web interface
 
+## Project Structure
+- `app.py` — Core RAG logic (PDF processing, chunking, embeddings, LLM calls)
+- `streamlit_app.py` — Streamlit UI layer
+
 ## ⚙️ How it works
 1. Upload any PDF file
 2. App chunks the PDF and creates embeddings
