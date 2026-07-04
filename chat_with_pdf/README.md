@@ -4,6 +4,7 @@ An AI-powered application that lets you upload any PDF and ask questions about i
 
 ## 🚀 Live Demo
 [Click here to try it live](https://gen-ai-projects-caxfmgw7xzfg6jfbwqqlz7.streamlit.app/)
+![App Screenshot](demo.png)
 
 ## 🛠️ Tech Stack
 - **LangChain** — PDF loading and text splitting
