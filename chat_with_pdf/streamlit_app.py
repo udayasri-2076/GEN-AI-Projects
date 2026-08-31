@@ -68,7 +68,7 @@ if uploaded_file is not None:
             context = "\n".join([doc.page_content for doc in relevant_chunks])
 
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=[
                     {"role": "user", "content": f"Answer based on context:\n{context}\n\nQuestion: {question}"}
                 ]
