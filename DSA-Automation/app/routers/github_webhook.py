@@ -1,3 +1,4 @@
+import webbrowser
 import asyncio
 import hashlib
 import hmac
@@ -15,7 +16,7 @@ from app.services.ai_generation_service import AIGenerationService
 from app.services.dsa_classifier_service import DSAClassifierService
 from app.services.github_service import GitHubService
 from app.services.leetcode_service import LeetCodeService
-
+from app.services.desktop_notification_service import notify_draft_ready
 
 load_dotenv()
 
@@ -861,6 +862,12 @@ async def process_github_push(
                 "classification_status"
             )
 
+            # Store the classifier status on the submission.
+            # Later pipeline stages read this value from the submission.
+            submission[
+                "classification_status"
+            ] = classification_status
+
             if classification_status == "topic_and_pattern":
 
                 submission[
@@ -1494,10 +1501,13 @@ async def github_webhook(
 # =========================================================
 
 @router.post("/backfill/generate")
+
 async def backfill_generate(
     limit: int = 25,
     max_workers: int = 2,
+    problem_numbers: str | None = None,
 ):
+
     """
     Generate AI drafts for already-classified backfill problems.
 
@@ -1528,14 +1538,31 @@ async def backfill_generate(
 
     # Reuse the already-tested scan logic.
     scan_result = await backfill_scan(limit=0)
-
+    
     ready = [
         item
         for item in scan_result.get("problems", [])
         if item.get("action") == "ready_for_backfill"
+]
+
+    if problem_numbers:
+        requested_numbers = {
+            int(number.strip())
+            for number in problem_numbers.split(",")
+            if number.strip()
+    }
+    ready = [
+        item for item in ready
+        if item.get("problem_number") in requested_numbers
     ]
 
     ready = ready[:limit]
+
+
+
+    
+    
+
 
     if not ready:
         return {
@@ -1548,6 +1575,7 @@ async def backfill_generate(
             "postgresql_draft_created": False,
             "results": [],
         }
+
 
     github = GitHubService()
 

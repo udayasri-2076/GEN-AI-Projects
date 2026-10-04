@@ -1,3 +1,12 @@
+
 @echo off
-cd /d C:\Users\udaya\Desktop\fastapi
-venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+cd /d "%~dp0"
+
+if not exist "venv\Scripts\python.exe" (
+    echo ERROR: Virtual environment not found.
+    pause
+    exit /b 1
+)
+
+venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+pause

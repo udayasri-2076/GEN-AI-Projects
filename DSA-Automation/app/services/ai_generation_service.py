@@ -187,9 +187,19 @@ For every approach provide:
 ==================================================
 CODE COMMENT STYLE
 ==================================================
+CRITICAL CODE OUTPUT REQUIREMENTS:
 
+1. Preserve real newline characters in all Java and Python code.
+2. Never compress multiple statements onto one line.
+3. Use standard indentation and separate statements onto individual lines.
+4. Include detailed inline dry-run comments showing variable values,
+   loop iterations, condition results, and updates.
+5. Include a complete, runnable solution with the required class and method.
+6. Before returning JSON, verify that code strings contain proper line breaks.
+7. Apply these requirements to BOTH initial generation and regeneration.
 The code must contain detailed learning comments
 similar to the user's reference.
+
 
 The comments should explain what is happening during
 the actual example/dry run.

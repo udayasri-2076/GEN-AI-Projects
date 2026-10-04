@@ -202,6 +202,7 @@ async def review_dashboard(
         .order_by(Draft.id.desc())
         .all()
     )
+    latest_draft_id = drafts[0].id if drafts else 0
 
     def escape(value):
         return html.escape(
@@ -452,6 +453,25 @@ async def review_dashboard(
             </div>
 
         </div>
+
+        <script>
+    const latestDraftId = {latest_draft_id};
+    const storageKey = "dsaLatestDraftId";
+    const previousId = sessionStorage.getItem(storageKey);
+
+    if (previousId === null) {{
+        sessionStorage.setItem(storageKey, String(latestDraftId));
+    }} else if (latestDraftId > Number(previousId)) {{
+        sessionStorage.setItem(storageKey, String(latestDraftId));
+        window.location.href = "/review/" + latestDraftId;
+    }}
+
+    setTimeout(() => {{
+        window.location.reload();
+    }}, 5000);
+</script>
+
+ 
     </body>
     </html>
     """
@@ -812,7 +832,8 @@ async def review_draft(
             <div class="code-title">
                 <h2>☕ Java</h2>
             </div>
-            <pre>{java or "Not generated"}</pre>
+            <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{java or "Not generated"}</pre>
+         
         </div>
 
 
@@ -820,8 +841,8 @@ async def review_draft(
             <div class="code-title">
                 <h2>🐍 Python</h2>
             </div>
-            <pre>{python or "Not generated"}</pre>
-        </div>
+           <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{java or "Not generated"}</pre>
+           </div>
 
 
         <div class="card">
