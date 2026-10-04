@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: dsa-automation
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_OWNER
+        sync: false
+      - key: LEETCODE_REPO
+        sync: false
+      - key: DSA_REPO
+        sync: false
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: REVIEW_USERNAME
+        value: admin
+      - key: REVIEW_PASSWORD
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
