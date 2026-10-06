@@ -77,6 +77,9 @@ class DSAClassifierService:
         ],
         "two pointers": [
             "Two Pointers",
+            "Slow-Fast Pointer",
+            "Slow Fast Pointers",
+            "Fast and Slow Pointers",
         ],
         "sliding window": [
             "Sliding Window",
@@ -169,6 +172,26 @@ class DSAClassifierService:
                 if item_path.startswith(child_prefix):
                     patterns.append(child)
                     break
+            else:
+                # empty_pattern_folder: a brand-new pattern folder holds only
+                # a README.md and no problems yet. A problem folder always
+                # contains a Java or Python solution file, so a folder with
+                # a README but no code files is a pattern folder.
+                file_names = [
+                    item.get("path", "")[len(child_prefix):].lower()
+                    for item in tree
+                    if item.get("type") == "blob"
+                    and item.get("path", "").startswith(child_prefix)
+                ]
+                has_readme = any(
+                    name == "readme.md" for name in file_names
+                )
+                has_code = any(
+                    name.endswith((".java", ".py"))
+                    for name in file_names
+                )
+                if has_readme and not has_code:
+                    patterns.append(child)
         return sorted(set(patterns))
     @classmethod
     def match_topic(
