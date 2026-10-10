@@ -82,7 +82,7 @@ def latest_draft(db: Session = Depends(get_db)):
     return {"id": db.scalar(select(func.max(Draft.id)))}
 
 
-@app.get("/health", include_in_schema=False)
+@app.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
 def health():
     return {"status": "ok"}
 
