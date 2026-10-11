@@ -882,7 +882,7 @@ async def process_github_push(
                     problem_folder_name=problem_folder_name,
                 )
 
-            elif classification_status == "topic_only":
+            elif classification_status in {"topic_only", "pattern_needs_ai"}:
 
                 submission[
                     "destination"
@@ -917,7 +917,6 @@ async def process_github_push(
             if classification_status in {
                 "leetcode_metadata_error",
                 "topic_not_found",
-                "pattern_needs_ai",
             }:
 
                 submission[
@@ -1013,6 +1012,7 @@ async def process_github_push(
             if classification_status not in {
                 "topic_and_pattern",
                 "topic_only",
+                "pattern_needs_ai",
             }:
 
                 submission[
