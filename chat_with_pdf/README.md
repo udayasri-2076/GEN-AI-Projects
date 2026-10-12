@@ -1,21 +1,22 @@
 # Chat with PDF 📄
 
-An AI-powered application that lets you upload any PDF and ask questions about it instantly.
+An AI-powered app that lets you upload any PDF and ask questions about it instantly, using Retrieval-Augmented Generation (RAG).
 
 ## 🚀 Live Demo
 [Click here to try it live](https://gen-ai-projects-caxfmgw7xzfg6jfbwqqlz7.streamlit.app/)
 ![App Screenshot](demo.png)
 
 ## 🛠️ Tech Stack
-- **LangChain** — PDF loading and text splitting
-- **FAISS** — Vector similarity search
-- **Google Gemini** — Text embeddings
-- **Groq + LLaMA 3** — Fast AI responses
-- **Streamlit** — Web interface
+- **LangChain** - PDF loading (PyPDFLoader) and text splitting
+-**Google Gemini** = text embeddings (gemini-embedding-001)
+-**FAISS** - in-memory vector similarity search
+-**Groq (openai/gpt-oss-120b)** - fast answer generation
+-**Streamlit** - web interface
 
 ## Project Structure
-- `app.py` — Core RAG logic (PDF processing, chunking, embeddings, LLM calls)
-- `streamlit_app.py` — Streamlit UI layer
+-'streamlit_app.py' - Streamlit UI plus the RAG pipeline used by the live app
+-'app.py' - simple command-line version of the same pipeline for quick testing (set your own PDF path inside)
+-requirements.txt: dependencies
 
 ## ⚙️ How it works
 1. Upload any PDF file
