@@ -4,25 +4,26 @@ An AI-powered app that lets you upload any PDF and ask questions about it instan
 
 ## 🚀 Live Demo
 [Click here to try it live](https://gen-ai-projects-caxfmgw7xzfg6jfbwqqlz7.streamlit.app/)
+
 ![App Screenshot](demo.png)
 
 ## 🛠️ Tech Stack
 - **LangChain** - PDF loading (PyPDFLoader) and text splitting
--**Google Gemini** = text embeddings (gemini-embedding-001)
--**FAISS** - in-memory vector similarity search
--**Groq (openai/gpt-oss-120b)** - fast answer generation
--**Streamlit** - web interface
+- **Google Gemini** - text embeddings (gemini-embedding-001)
+- **FAISS** - in-memory vector similarity search
+- **Groq (openai/gpt-oss-120b)** - fast answer generation
+- **Streamlit** - web interface
 
-## Project Structure
--'streamlit_app.py' - Streamlit UI plus the RAG pipeline used by the live app
--'app.py' - simple command-line version of the same pipeline for quick testing (set your own PDF path inside)
--requirements.txt: dependencies
+## 📁 Project Structure
+- `streamlit_app.py` - Streamlit UI plus the RAG pipeline used by the live app
+- `app.py` - simple command-line version of the same pipeline for quick testing (set your own PDF path inside)
+- `requirements.txt` - dependencies
 
 ## ⚙️ How it works
 1. Upload any PDF file
-2. App chunks the PDF and creates embeddings
-3. Your question is matched against relevant chunks
-4. LLaMA 3 generates an accurate answer
+2. The app splits the PDF into chunks and creates embeddings
+3. Your question is matched against the most relevant chunks using FAISS
+4. The Groq LLM generates an accurate answer from those chunks
 
 ## 🏃 Run Locally
 ```bash
