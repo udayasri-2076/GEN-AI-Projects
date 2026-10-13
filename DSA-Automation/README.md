@@ -14,7 +14,6 @@ The review page is password protected, because approving a draft writes to my Gi
 - **GitHub Webhooks + REST API** - detect new solutions and commit approved notes
 - **Google Gemini (google-genai)** - generates solutions and README notes
 - **PostgreSQL + SQLAlchemy** - stores drafts
-- **Telegram Bot API** - notifies me when a draft is ready
 - **Docker + Render** - deployment
 - **pytest** - tests
 
@@ -22,7 +21,7 @@ The review page is password protected, because approving a draft writes to my Gi
 - `app/main.py` - app setup, security middleware, health check
 - `app/routers/github_webhook.py` - webhook endpoint and generation pipeline
 - `app/routers/review.py` - review page, regenerate and approve
-- `app/services/` - GitHub, LeetCode, classifier, Gemini and Telegram services
+- `app/services/` - GitHub, LeetCode, classifier, Gemini services
 - `app/models/draft.py` - draft database model
 - `app/security.py` - password protection and lockout
 - `watcher.py` - optional laptop script that opens the review page automatically
@@ -36,8 +35,7 @@ flowchart LR
     C --> D[Fetch problem details and pick Topic / Pattern folder]
     D --> E[Gemini generates missing Java, Python and README]
     E --> F[(PostgreSQL draft)]
-    F --> G[Telegram message with review link]
-    G --> H[Review page]
+    F --> H[Review page]
     H -- regenerate with feedback --> E
     H -- approve --> I[Commit to DSA notes repo]
 ```
@@ -46,7 +44,7 @@ flowchart LR
 2. GitHub sends a webhook, and the signature is verified (HMAC-SHA256)
 3. The app fetches the problem details and picks the right Topic / Pattern folder from my existing notes repo
 4. Gemini generates only the missing files (Java, Python, README)
-5. The draft is saved in PostgreSQL and a Telegram message with the review link is sent
+5. The draft is saved in PostgreSQL and shown on the password-protected review page
 6. I review the draft, optionally regenerate with feedback, and approve
 7. On approval, the files are committed to my DSA notes repo in one commit
 
@@ -70,7 +68,5 @@ GITHUB_WEBHOOK_SECRET=your_secret
 GEMINI_API_KEY=your_key
 REVIEW_USERNAME=your_username
 REVIEW_PASSWORD=your_password
-TELEGRAM_BOT_TOKEN=your_token
-TELEGRAM_CHAT_ID=your_chat_id
 PUBLIC_BASE_URL=https://your-app.onrender.com
 ```
