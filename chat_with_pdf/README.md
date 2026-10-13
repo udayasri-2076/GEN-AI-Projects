@@ -20,6 +20,16 @@ An AI-powered app that lets you upload any PDF and ask questions about it instan
 - `requirements.txt` - dependencies
 
 ## ⚙️ How it works
+```mermaid
+flowchart LR
+    A[Upload PDF] --> B[Split into chunks]
+    B --> C[Gemini embeddings]
+    C --> D[(FAISS index)]
+    E[Your question] --> F[Find top 3 similar chunks]
+    D --> F
+    F --> G[Groq LLM writes the answer]
+```
+
 1. Upload any PDF file
 2. The app splits the PDF into chunks and creates embeddings
 3. Your question is matched against the most relevant chunks using FAISS
