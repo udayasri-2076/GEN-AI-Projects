@@ -7,8 +7,7 @@ A collection of practical Generative AI applications built using Python, LLMs, a
 ### 1. DSA Automation
 Automates the generation of DSA study materials from coding solutions, with a review-and-approval workflow.
 
-**Tech Stack:** Python, FastAPI, PostgreSQL, SQLAlchemy, GitHub Webhooks, Gemini API, Telegram
-
+**Tech Stack:** Python, FastAPI, PostgreSQL, SQLAlchemy, GitHub Webhooks, Gemini API
 ### 2. Chat with PDF
 A PDF question-answering application that uses Retrieval-Augmented Generation (RAG) to answer questions based on uploaded documents.
 
