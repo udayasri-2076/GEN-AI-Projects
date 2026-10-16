@@ -11,7 +11,7 @@ The review page is password protected, because approving a draft writes to my Gi
 
 ## 🎬 Demo Video
 
-[▶️ Watch DSA Autopilot Demo](https://github.com/udayasri-2076/GEN-AI-Projects/blob/main/DSA-Automation/DSA_Autopilot_Demo.mp4)
+[▶️ Watch DSA Autopilot Demo](https://github.com/udayasri-2076/GEN-AI-Projects/raw/refs/heads/main/DSA-Automation/DSA_Autopilot_Demo.mp4)
 
 The review page is password protected. Watch the demo to explore the application's workflow without signing in.
 
