@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import json
 import os
@@ -11,6 +12,10 @@ from pydantic import BaseModel
 from app.services.style_example import STYLE_BLOCK
 
 load_dotenv()
+
+
+class BadOutputError(Exception):
+    """Raised when Gemini returns code in the wrong language."""
 
 
 class GeneratedFiles(BaseModel):
@@ -35,6 +40,7 @@ class AIGenerationService:
     - Generates only requested missing files.
     - Supports regeneration using user feedback.
     - Retries temporary Gemini failures.
+    - Rejects Python output that is really Java.
     """
 
     MAX_RETRIES = 4
@@ -55,9 +61,123 @@ class AIGenerationService:
             "gemini-3.5-flash-lite",
         )
 
+        print(
+            f"DEBUG Gemini model in use: {self.model}"
+        )
+
         self.client = genai.Client(
             api_key=api_key
         )
+
+    # =========================================================
+    # FILE NAME MATCHING
+    # =========================================================
+
+    @staticmethod
+    def wants_file(
+        files: list[str],
+        kind: str,
+    ) -> bool:
+        """
+        Check whether a list of file names/labels includes
+        a java, python or readme file.
+
+        Accepts values like:
+        "java", "Java", "Solution.java",
+        "python", "Python", "solution.py",
+        "README.md", "readme"
+
+        This avoids silently deleting a file just because
+        the name was not an exact match.
+        """
+
+        for item in files:
+
+            name = str(item).strip().lower()
+
+            if kind == "java":
+
+                if name == "java" or name.endswith(".java"):
+                    return True
+
+            elif kind == "python":
+
+                if (
+                    name in ("python", "py")
+                    or name.endswith(".py")
+                ):
+                    return True
+
+            elif kind == "readme":
+
+                if (
+                    name in ("readme", "readme.md")
+                    or name.endswith("readme.md")
+                ):
+                    return True
+
+        return False
+
+    # =========================================================
+    # PYTHON OUTPUT CHECK
+    # =========================================================
+
+    @staticmethod
+    def check_python_code(code: str | None) -> None:
+        """
+        Reject Python output that is really Java
+        (or is not valid-looking Python).
+
+        Step 1: the code must be valid Python syntax.
+                Java is never valid Python, so this catches it.
+        Step 2: comments are ignored so a comment that mentions
+                something like "int[]" does not cause a false alarm.
+        """
+
+        if not code:
+            return
+
+        # Step 1: real syntax check.
+        try:
+            ast.parse(code)
+
+        except SyntaxError as error:
+
+            raise BadOutputError(
+                f"Python output is not valid Python "
+                f"(line {error.lineno}): {error.msg}"
+            ) from error
+
+        # Step 2: Java marker check (comments removed first).
+        code_without_comments = "\n".join(
+            line.split("#", 1)[0]
+            for line in code.splitlines()
+        )
+
+        java_markers = [
+            "public class",
+            "public static",
+            "System.out",
+            "private ",
+            "int[]",
+            "String[]",
+            "ListNode ",
+            "new ListNode(",
+        ]
+
+        for marker in java_markers:
+
+            if marker in code_without_comments:
+
+                raise BadOutputError(
+                    f"Python output contains Java code: {marker}"
+                )
+
+        if "def " not in code_without_comments:
+
+            raise BadOutputError(
+                "Python output has no 'def' function."
+            )
 
     # =========================================================
     # NORMAL GENERATION PROMPT
@@ -122,7 +242,8 @@ SUBMITTED LEETCODE SOLUTION
 
 This is the solution I submitted to LeetCode.
 
-Use it as the source of my actual algorithmic reasoning.
+Use it as the source of my actual algorithmic
+reasoning.
 
 Do not blindly translate syntax.
 
@@ -256,6 +377,17 @@ PYTHON
 ==================================================
 
 Generate executable Python code.
+
+The Python file MUST be written in real Python 3, NOT Java.
+
+- Use `class Solution:` and `def method(self, ...)`.
+- Use `#` for comments, never `//`.
+- Do NOT use `public`, `private`, `static`, `new`,
+  semicolons, curly braces, or typed declarations such as
+  `ListNode x = ...` or `int[] a`.
+- If the problem uses a linked list, use the standard
+  LeetCode Python `ListNode` class (do not redeclare
+  Java syntax).
 
 The Python solution must preserve the SAME:
 
@@ -410,6 +542,9 @@ Rules:
         and reasonable to retry.
         """
 
+        if isinstance(error, BadOutputError):
+            return True
+
         error_text = str(
             error
         ).lower()
@@ -452,6 +587,11 @@ Rules:
         Does NOT write anything to GitHub.
         """
 
+        print(
+            "DEBUG missing_files:",
+            missing_files,
+        )
+
         if not missing_files:
 
             return GeneratedFiles()
@@ -480,8 +620,11 @@ Rules:
                     f"{attempt}/{self.MAX_RETRIES}"
                 )
 
-                response = (
+                # .aio = async client, so the server is not
+                # blocked while Gemini is thinking.
+                response = await (
                     self.client
+                    .aio
                     .models
                     .generate_content(
                         model=self.model,
@@ -548,22 +691,27 @@ Rules:
                 # Never return files that were not requested.
                 # -------------------------------------------------
 
-                requested = {
-                    value.lower()
-                    for value in missing_files
-                }
-
-                if "java" not in requested:
+                if not self.wants_file(missing_files, "java"):
 
                     result.java = None
 
-                if "python" not in requested:
+                if not self.wants_file(missing_files, "python"):
 
                     result.python = None
 
-                if "readme.md" not in requested:
+                if not self.wants_file(missing_files, "readme"):
 
                     result.readme = None
+
+                # -------------------------------------------------
+                # Python must really be Python.
+                # If it is Java, this raises BadOutputError and the
+                # retry loop asks Gemini again.
+                # -------------------------------------------------
+
+                self.check_python_code(
+                    result.python
+                )
 
                 print(
                     "✅ Gemini generation succeeded."
@@ -791,6 +939,15 @@ and SAME learning structure.
 
 Python must not become a simplified version of Java.
 
+The Python file MUST be written in real Python 3, NOT Java.
+Use `class Solution:`, `def`, and `#` comments.
+Never use `public`, `private`, `static`, `new`, semicolons,
+curly braces, or typed declarations like `ListNode x = ...`.
+
+If Python is selected, translate the reasoning of the Java
+draft into Python syntax. Never copy Java syntax or Java
+comments into the Python file.
+
 The README must follow the user's reference organization.
 
 {STYLE_BLOCK}
@@ -887,6 +1044,11 @@ Do not add explanation outside the JSON.
         Does NOT write anything to GitHub.
         """
 
+        print(
+            "DEBUG selected_files:",
+            selected_files,
+        )
+
         if not selected_files:
 
             raise ValueError(
@@ -898,6 +1060,25 @@ Do not add explanation outside the JSON.
             raise ValueError(
                 "Feedback cannot be empty."
             )
+
+        # If the current Python draft is really Java, don't show it
+        # to Gemini as the draft to preserve.
+        if current_python:
+
+            try:
+
+                self.check_python_code(
+                    current_python
+                )
+
+            except BadOutputError:
+
+                print(
+                    "DEBUG current Python draft is invalid, "
+                    "ignoring it"
+                )
+
+                current_python = None
 
         prompt = (
             self.build_regeneration_prompt(
@@ -929,8 +1110,11 @@ Do not add explanation outside the JSON.
                     f"{attempt}/{self.MAX_RETRIES}"
                 )
 
-                response = (
+                # .aio = async client, so the server is not
+                # blocked while Gemini is thinking.
+                response = await (
                     self.client
+                    .aio
                     .models
                     .generate_content(
                         model=self.model,
@@ -997,22 +1181,25 @@ Do not add explanation outside the JSON.
                 # Only selected files can be returned.
                 # -------------------------------------------------
 
-                selected = {
-                    file_name.lower()
-                    for file_name in selected_files
-                }
-
-                if "java" not in selected:
+                if not self.wants_file(selected_files, "java"):
 
                     result.java = None
 
-                if "python" not in selected:
+                if not self.wants_file(selected_files, "python"):
 
                     result.python = None
 
-                if "readme.md" not in selected:
+                if not self.wants_file(selected_files, "readme"):
 
                     result.readme = None
+
+                # -------------------------------------------------
+                # Python must really be Python.
+                # -------------------------------------------------
+
+                self.check_python_code(
+                    result.python
+                )
 
                 print(
                     "✅ Gemini regeneration succeeded."
