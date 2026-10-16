@@ -846,7 +846,7 @@ async def review_draft(
             <div class="code-title">
                 <h2>🐍 Python</h2>
             </div>
-           <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{java or "Not generated"}</pre>
+            <pre style="white-space: pre-wrap; overflow-wrap: anywhere;">{python or "Not generated"}</pre>
            </div>
 
 
