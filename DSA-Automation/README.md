@@ -11,11 +11,9 @@ The review page is password protected, because approving a draft writes to my Gi
 
 ## 🎬 Demo Video
 
-[▶️ Watch DSA Autopilot Demo](https://github.com/udayasri-2076/GEN-AI-Projects/raw/refs/heads/main/DSA-Automation/DSA_Autopilot_Demo.mp4)
+https://github.com/user-attachments/assets/ee6c7a56-9e95-4bd9-9cac-f241c96b6396
 
-The review page is password protected. Watch the demo to explore the application's workflow without signing in.
-
-![App Screenshot](demo.png)
+The live review page asks for a password before it opens. Watch the demo above to see the full workflow without signing in.
 
 ## 🛠️ Tech Stack
 - **FastAPI** - webhook receiver and review dashboard
