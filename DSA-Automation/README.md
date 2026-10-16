@@ -1,11 +1,19 @@
 # DSA Autopilot 🤖
 
+**AI-Powered DSA Notes Automation System**
+
 A FastAPI service that turns your LeetCode submissions into organised DSA notes. Solve a problem, and Java/Python solutions plus a README are generated with AI, saved as a draft for your review, and committed to your notes repo only after you approve.
 
 ## 🚀 Live Demo
 [Click here to view the live service](https://dsa-autopilot.onrender.com)
 
 The review page is password protected, because approving a draft writes to my GitHub.
+
+## 🎬 Demo Video
+
+[▶️ Watch DSA Autopilot Demo](https://github.com/udayasri-2076/GEN-AI-Projects/blob/main/DSA-Automation/DSA_Autopilot_Demo.mp4)
+
+The review page is password protected. Watch the demo to explore the application's workflow without signing in.
 
 ![App Screenshot](demo.png)
 
