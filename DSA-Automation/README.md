@@ -15,6 +15,10 @@ https://github.com/user-attachments/assets/ee6c7a56-9e95-4bd9-9cac-f241c96b6396
 
 The live review page asks for a password before it opens. Watch the demo above to see the full workflow without signing in.
 
+## 📸 Screenshots
+**Review dashboard:** all generated drafts with their status
+![Review dashboard](review-dashboard.png)
+
 ## 🛠️ Tech Stack
 - **FastAPI** - webhook receiver and review dashboard
 - **GitHub Webhooks + REST API** - detect new solutions and commit approved notes
